@@ -1,0 +1,65 @@
+@font-face {
+  font-family: "NotoSansThai";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(/fonts/noto_sans_thai/NotoSansThai-Regular.ttf) format("truetype");
+}
+
+* {
+  font-family: "NotoSansThai", sans-serif !important;
+}
+
+.v-data-table {
+  border-radius: 4px !important;
+  background: #ffffff;
+}
+
+.modal-container {
+  z-index: 9000 !important;
+  pointer-events: none !important;
+}
+
+// .v-table-header th {
+//   background-color: var(--v-background-base) !important;
+//   font-size: 12px !important;
+//   font-weight: bold !important;
+// }
+
+// .v-table-header__icon {
+//   margin-left: 3px;
+//   display: flex;
+//   align-items: center;
+// }
+
+// .v-table-header th.desc .v-table-header__icon {
+//   rotate: 180deg;
+// }
+
+// .v-table-header__content {
+//   color: #ffffff;
+// }
+
+.v-table__wrapper {
+  border-top-left-radius: 4px !important;
+  border-top-right-radius: 4px !important;
+}
+
+thead {
+  position: sticky;
+  top: 0;
+  background: rgb(var(--v-theme-primary-darken-1));
+  z-index: 3;
+}
+
+.v-table > .v-table__wrapper > table > thead > tr > td,
+.v-table > .v-table__wrapper > table > thead > tr > th,
+.v-table > .v-table__wrapper > table > tbody > tr > td {
+  padding: 4px 8px !important;
+  white-space: nowrap !important;
+}
+.v-table.none > .v-table__wrapper > table > thead > tr > td,
+.v-table.none > .v-table__wrapper > table > thead > tr > th,
+.v-table.none > .v-table__wrapper > table > tbody > tr > td {
+  white-space: normal !important;
+}

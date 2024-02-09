@@ -152,9 +152,8 @@ export default defineNuxtComponent({
   data() {
     return {
       open_date_picker: false,
-      selected_date: moment(this.$props.modelValue, "DD/MM/YYYY").toDate(),
-      input_value:
-        this.$props.modelValue === "Invalid date" ? "" : this.$props.modelValue,
+      selected_date: null as Date | null,
+      input_value: "",
       input_rules: this.$props.rules as any[],
     };
   },
@@ -221,6 +220,17 @@ export default defineNuxtComponent({
       this.input_value = moment(this.selected_date).format("DD/MM/YYYY");
       this.open_date_picker = false;
       this.$emit("update:modelValue", this.input_value);
+    },
+  },
+  watch: {
+    "$props.modelValue": {
+      immediate: true,
+      handler(val: string) {
+        if (val && val !== "Invalid date") {
+          this.input_value = val;
+          this.selected_date = moment(val, "DD/MM/YYYY").toDate();
+        }
+      },
     },
   },
 });

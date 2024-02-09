@@ -25,4 +25,37 @@ type ReceiveOption = {
   Receipt_name: string;
 };
 
-export type { AccResponse, ReceiveOption };
+type BankOption = {
+  Bank_id: string;
+  Bank_name: string;
+  id_list_reference: number;
+  id_no: number;
+  id_seperate_type: string;
+};
+
+type BankSeparateOption = {
+  Bank_id: string;
+  Bank_name: string;
+  date: string;
+  id: number;
+  id_no: number;
+  id_seperate: string;
+  id_seperate_type: string;
+  id_type: number;
+  name_seperate: string;
+  name_type: string;
+  type_seperate: string;
+};
+
+type ExpenseOption = {
+  Expanse_id: string;
+  Expanse_name: string;
+};
+
+export type {
+  AccResponse,
+  ReceiveOption,
+  BankOption,
+  BankSeparateOption,
+  ExpenseOption,
+};

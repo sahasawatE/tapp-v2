@@ -1,8 +1,20 @@
 <template>
   <div>
-    <common-modal :active="$props.open" :title="title" @close="$emit('close')">
+    <common-modal
+      :active="$props.open"
+      :title="title"
+      @close="$emit('close')"
+      @save="handleSave"
+    >
       <div>
-        <accounting-add-receive v-if="$props.selectedMenu === 0" />
+        <accounting-add-receive
+          v-if="$props.selectedMenu === 0"
+          ref="add-form"
+        />
+        <accounting-add-expense
+          v-if="$props.selectedMenu === 1"
+          ref="add-form"
+        />
       </div>
     </common-modal>
   </div>
@@ -44,6 +56,18 @@ export default defineNuxtComponent({
 
         default:
           return "";
+      }
+    },
+    formRef() {
+      const ref = this.$refs["add-form"] as any;
+      return ref;
+    },
+  },
+  methods: {
+    async handleSave() {
+      const result = await this.formRef.handleSubmit();
+      if (result) {
+        console.log(result);
       }
     },
   },

@@ -3,9 +3,9 @@
     <div class="d-flex flex-column t-gap-4">
       <v-select
         v-model="form.data.type"
-        :items="receipt"
-        item-title="Receipt_name"
-        item-value="Receipt_id"
+        :items="expense"
+        item-title="Expanse_name"
+        item-value="Expanse_id"
         label="ประเภท"
         return-object
         :rules="rules.type"
@@ -62,9 +62,9 @@
 import moment from "moment";
 import type { VForm } from "vuetify/components";
 import type {
-  ReceiveOption,
   BankOption,
   BankSeparateOption,
+  ExpenseOption,
 } from "~/types/accounting.type";
 
 interface bso extends BankSeparateOption {
@@ -74,15 +74,15 @@ interface bso extends BankSeparateOption {
 
 export default defineNuxtComponent({
   setup() {
-    const receipt = ref<ReceiveOption[]>([]);
+    const expense = ref<ExpenseOption[]>([]);
     const bank = ref<BankOption[]>([]);
     const bank_separate = ref<bso[]>([]);
 
     const form = useFormState({
       type: {
-        Receipt: "",
-        Receipt_name: "",
-      } as ReceiveOption,
+        Expanse_id: "",
+        Expanse_name: "",
+      } as ExpenseOption,
       bank: {
         Bank_id: "",
         Bank_name: "",
@@ -112,7 +112,7 @@ export default defineNuxtComponent({
     });
 
     const rules = {
-      type: [(v: ReceiveOption) => !!v.Receipt_name || ""],
+      type: [(v: ExpenseOption) => !!v.Expanse_name || ""],
       bank: [(v: BankOption) => !!v.Bank_name || ""],
       bs: [(v: bso) => !!v.title || ""],
       bsd: [(v: string) => !!v || ""],
@@ -120,7 +120,7 @@ export default defineNuxtComponent({
     };
 
     return {
-      receipt,
+      expense,
       bank,
       bank_separate,
       form,
@@ -130,7 +130,7 @@ export default defineNuxtComponent({
   async mounted() {
     this.$store.setLoading(true);
 
-    await this.getReciept();
+    await this.getExpense();
 
     this.$store.setLoading(false);
   },
@@ -142,11 +142,11 @@ export default defineNuxtComponent({
     },
   },
   methods: {
-    async getReciept() {
-      const receipt: ReceiveOption[] = await this.$rest.options("reciept");
-      this.receipt = receipt;
+    async getExpense() {
+      const expense: ExpenseOption[] = await this.$rest.options("expanse");
+      this.expense = expense;
     },
-    async getBank(e: ReceiveOption) {
+    async getBank(e: ExpenseOption) {
       this.form.data.bank = {
         Bank_id: "",
         Bank_name: "",
@@ -157,9 +157,9 @@ export default defineNuxtComponent({
 
       this.$store.setLoading(true);
 
-      const type = e.Receipt_name.split(" ")[1];
+      const type = e.Expanse_name.split(" ")[1];
       const bank: BankOption[] = await this.$rest.options("bank-options", {
-        mode: 1,
+        mode: 2,
         type,
       });
       this.bank = bank;

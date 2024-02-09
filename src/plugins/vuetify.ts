@@ -100,6 +100,7 @@ export default defineNuxtPlugin((app) => {
       VTextarea: {
         hideDetails: true,
         variant: "outlined",
+        color: "primary",
       },
     },
   });

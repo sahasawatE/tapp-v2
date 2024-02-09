@@ -34,6 +34,8 @@ class Rest {
         } else {
           throw new Error(`ERROR status : ${status}`);
         }
+      } else if (status === 401) {
+        this.logout();
       } else {
         throw new Error(`ERROR status : ${status}`);
       }

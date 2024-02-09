@@ -102,6 +102,11 @@ export default defineNuxtPlugin((app) => {
         variant: "outlined",
         color: "primary",
       },
+      VAutocomplete: {
+        hideDetails: true,
+        variant: "outlined",
+        density: "comfortable",
+      },
     },
   });
   app.vueApp.use(vuetify);

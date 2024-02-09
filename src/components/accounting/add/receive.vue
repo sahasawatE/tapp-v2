@@ -29,13 +29,10 @@
       <v-autocomplete
         v-if="bank_separate.length"
         v-model="form.data.bank_separate"
-        density="comfortable"
-        variant="outlined"
         item-title="title"
         item-value="id_id"
         label="ตัวแยก"
         :items="bank_separate"
-        hide-details
         return-object
         :rules="rules.bs"
       ></v-autocomplete>

@@ -15,6 +15,7 @@
           v-if="$props.selectedMenu === 1"
           ref="add-form"
         />
+        <accounting-add-other v-if="$props.selectedMenu === 2" ref="add-form" />
       </div>
     </common-modal>
   </div>

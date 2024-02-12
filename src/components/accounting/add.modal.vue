@@ -28,6 +28,7 @@
       :open="selected_menu > -1"
       :selected-menu="selected_menu"
       @close="selected_menu = -1"
+      @submit="handleFormSubmitted"
     />
   </div>
 </template>
@@ -69,6 +70,10 @@ export default defineNuxtComponent({
   methods: {
     handleClickMenu(index: number) {
       this.selected_menu = index;
+    },
+    handleFormSubmitted() {
+      this.selected_menu = -1;
+      this.$emit("submit");
     },
   },
   watch: {

@@ -23,7 +23,8 @@ class Rest {
   async post(endpoint: string, param?: { [key: string]: any }) {
     try {
       const cookie = useCookie("auth-token");
-      this.headers["auth-token"] = cookie.value || "";
+      const token = cookie.value || "";
+      this.headers["auth-token"] = token;
       const { data, status } = await this.api.post(endpoint, param, {
         headers: this.headers,
       });

@@ -107,6 +107,10 @@ export default defineNuxtPlugin((app) => {
         variant: "outlined",
         density: "comfortable",
       },
+      VProgressLinear: {
+        rounded: true,
+        color: "primary",
+      },
     },
   });
   app.vueApp.use(vuetify);

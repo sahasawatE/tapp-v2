@@ -62,12 +62,8 @@ import type {
   BankOption,
   BankSeparateOption,
   ExpenseOption,
+  bso,
 } from "~/types/accounting.type";
-
-interface bso extends BankSeparateOption {
-  no: number;
-  title: string;
-}
 
 export default defineNuxtComponent({
   setup() {
@@ -205,7 +201,7 @@ export default defineNuxtComponent({
     async handleSubmit() {
       const { valid } = await this.formRef.validate();
       if (valid) {
-        return this.form.data;
+        return { name: "expense", result: this.form.data };
       }
       return null;
     },

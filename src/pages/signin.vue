@@ -49,6 +49,7 @@
           "
           :rules="[(v: string) => !!v || 'กรุณากรอก password']"
           :hide-details="false"
+          autofocus
           @click:append-inner="show_password = !show_password"
         ></v-text-field>
       </v-form>
@@ -87,20 +88,24 @@ export default defineNuxtComponent({
     };
   },
   async mounted() {
-    this.$store.setLoading(true);
+    try {
+      this.$store.setLoading(true);
 
-    const users = (await this.$rest.post("getListUser")) as UserListItem[];
-    this.users = utils.groupBy(
-      users.filter((e) => e.User_id !== "test"),
-      "User_branch",
-    );
+      const users: UserListItem[] = await this.$rest.post("getListUser");
+      this.users = utils.groupBy(
+        users.filter((e) => e.User_id !== "test"),
+        "User_branch",
+      );
 
-    const branches = utils
-      .getKEY(this.users)
-      .filter((e) => e !== "admin" && e !== "ปากช่อง");
-    this.branches = branches;
-
-    this.$store.setLoading(false);
+      const branches = utils
+        .getKEY(this.users)
+        .filter((e) => e !== "admin" && e !== "ปากช่อง");
+      this.branches = branches;
+    } catch (err) {
+      this.$dialog.toast.error(err as string);
+    } finally {
+      this.$store.setLoading(false);
+    }
   },
   computed: {
     refForm() {

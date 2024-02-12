@@ -52,10 +52,58 @@ type ExpenseOption = {
   Expanse_name: string;
 };
 
+interface bso extends BankSeparateOption {
+  no: number;
+  title: string;
+}
+interface bs extends BankOption {
+  title: string;
+}
+
+type ListForm = {
+  bank: bs;
+  bank_separate: bso;
+  bank_separate_date: string;
+  amount: string;
+};
+
+type ReceiveForm = {
+  type: ReceiveOption;
+  bank: BankOption;
+  bank_separate: bso;
+  bank_separate_date: string;
+  amount: string;
+  detail: string;
+  transac_date: string;
+};
+
+type ExpenseForm = {
+  type: ExpenseOption;
+  bank: BankOption;
+  bank_separate: bso;
+  bank_separate_date: string;
+  amount: string;
+  detail: string;
+  transac_date: string;
+};
+
+type OtherForm = {
+  detail: string;
+  transac_date: string;
+  dr: ListForm[];
+  cr: ListForm[];
+};
+
 export type {
   AccResponse,
   ReceiveOption,
   BankOption,
   BankSeparateOption,
   ExpenseOption,
+  bso,
+  bs,
+  ReceiveForm,
+  ExpenseForm,
+  OtherForm,
+  ListForm,
 };

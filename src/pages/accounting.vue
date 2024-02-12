@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-column t-gap-4">
-    <v-row justify="space-between">
-      <v-col cols="auto">
+    <v-row align="center" justify="space-between">
+      <v-col cols="12" md="auto">
         <v-btn
           color="info"
           prepend-icon="mdi-plus"
@@ -9,13 +9,25 @@
           @click="add_modal = true"
         ></v-btn>
       </v-col>
-      <v-col cols="auto">
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-magnify"
-          text="ค้นหา"
-          @click="search_modal = true"
-        ></v-btn>
+      <v-col>
+        <v-row align="center" justify="end">
+          <v-col cols="12" md="4">
+            <v-text-field
+              variant="solo"
+              label="ค้นหารายการ"
+              color="secondary"
+              append-inner-icon="mdi-magnify"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="auto">
+            <v-btn
+              color="secondary"
+              variant="tonal"
+              text="ค้นหาขั้นสูง"
+              @click="search_modal = true"
+            ></v-btn>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <common-data-table :headers="table.headers" :data="table.data">
@@ -42,19 +54,21 @@
           {{ thisData }}
         </div>
       </template>
-      <template #data.edit_del>
+      <template #data.edit_del="{ data }">
         <div class="d-flex flex-row t-gap-2">
           <v-btn
             size="small"
             variant="tonal"
             icon="mdi-pencil"
             color="secondary"
+            :disabled="disableEditDelete(data)"
           ></v-btn>
           <v-btn
             size="small"
             variant="tonal"
             icon="mdi-delete"
             color="error"
+            :disabled="disableEditDelete(data)"
           ></v-btn>
         </div>
       </template>
@@ -64,7 +78,11 @@
       :open="search_modal"
       @close="search_modal = false"
     />
-    <accounting-add-modal :open="add_modal" @close="add_modal = false" />
+    <accounting-add-modal
+      :open="add_modal"
+      @close="add_modal = false"
+      @submit="handleRefresh"
+    />
   </div>
 </template>
 
@@ -108,17 +126,7 @@ export default defineNuxtComponent({
     };
   },
   async mounted() {
-    this.$store.setLoading(true);
-
-    const quarter = moment().quarter();
-    const { start, end } = this.getQuarterRange(quarter);
-
-    await this.fetchDataTable("acc1", moment().format("YYYY-MM"), {
-      quarter_start: start,
-      quarter_end: end,
-    });
-
-    this.$store.setLoading(false);
+    await this.handleRefresh();
   },
   computed: {
     today() {
@@ -126,6 +134,33 @@ export default defineNuxtComponent({
     },
   },
   methods: {
+    disableEditDelete(e: AccResponse) {
+      if (this.$store.getUser) {
+        if (this.$store.getUser.User_level === "user") {
+          return !(
+            moment().isSame(moment(e.Transac_date, "YYYY-MM-DD"), "date") &&
+            e.User_id === this.$store.getUser.User_id
+          );
+        }
+        return false;
+      }
+      return true;
+    },
+    async handleRefresh() {
+      this.$store.setLoading(true);
+
+      this.add_modal = false;
+
+      const quarter = moment().quarter();
+      const { start, end } = this.getQuarterRange(quarter);
+
+      await this.fetchDataTable("acc1", moment().format("YYYY-MM"), {
+        quarter_start: start,
+        quarter_end: end,
+      });
+
+      this.$store.setLoading(false);
+    },
     getQuarterRange(quarter: number) {
       const start = moment()
         .quarter(quarter)

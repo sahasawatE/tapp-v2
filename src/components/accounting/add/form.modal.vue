@@ -79,26 +79,27 @@ export default defineNuxtComponent({
           name: "other" | "receive" | "expense";
           result: any;
         } | null = await this.formRef.handleSubmit();
-        if (form && this.$store.getUser) {
-          switch (form.name) {
-            case "receive":
-              await this.handleReceive(form.result);
-              break;
+        console.log(form);
+        // if (form && this.$store.getUser) {
+        //   switch (form.name) {
+        //     case "receive":
+        //       await this.handleReceive(form.result);
+        //       break;
 
-            case "expense":
-              await this.handleExpense(form.result);
-              break;
+        //     case "expense":
+        //       await this.handleExpense(form.result);
+        //       break;
 
-            case "other":
-              await this.handleOther(form.result);
-              break;
+        //     case "other":
+        //       await this.handleOther(form.result);
+        //       break;
 
-            default:
-              this.$dialog.toast.error("ไม่มีข้อมูล");
-              break;
-          }
-        }
-        this.$emit("submit");
+        //     default:
+        //       this.$dialog.toast.error("ไม่มีข้อมูล");
+        //       break;
+        //   }
+        //   this.$emit("submit");
+        // }
       } catch (err) {
         this.$dialog.toast.error(err as string);
       } finally {

@@ -111,6 +111,17 @@ export default defineNuxtPlugin((app) => {
         rounded: true,
         color: "primary",
       },
+      VSwitch: {
+        hideDetails: true,
+        hideSpinButtons: true,
+        inset: true,
+        color: "secondary",
+      },
+      VRadioGroup: {
+        hideDetails: true,
+        hideSpinButtons: true,
+        color: "secondary",
+      },
     },
   });
   app.vueApp.use(vuetify);

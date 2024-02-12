@@ -94,6 +94,45 @@ type OtherForm = {
   cr: ListForm[];
 };
 
+type AccOption = {
+  Bank_id: string;
+  Bank_name: string;
+  id_no: number;
+};
+
+interface ao extends AccOption {
+  title: string;
+}
+
+type RefOption = {
+  id_reference: number;
+  name_reference: string;
+};
+
+type UserOption = {
+  User_firstname: string;
+  User_id: string;
+};
+
+type SeparateOption = {
+  id: number;
+  id_seperate: string;
+};
+
+type DeepSearchForm = {
+  show_today: boolean;
+  show_everyone: boolean;
+  quarter: string;
+  start_date: string;
+  end_date: string;
+  separate: SeparateOption;
+  ref: RefOption;
+  user: UserOption;
+  bank_condition: string;
+  bank_from: ao;
+  bank_to: ao;
+};
+
 export type {
   AccResponse,
   ReceiveOption,
@@ -106,4 +145,10 @@ export type {
   ExpenseForm,
   OtherForm,
   ListForm,
+  AccOption,
+  RefOption,
+  UserOption,
+  SeparateOption,
+  ao,
+  DeepSearchForm,
 };

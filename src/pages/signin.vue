@@ -139,7 +139,7 @@ export default defineNuxtComponent({
 
           this.$router.push("/home");
         } catch (err) {
-          console.log(err as string);
+          this.$dialog.toast.error(err as string);
         }
       }
       this.$store.setLoading(false);

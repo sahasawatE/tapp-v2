@@ -11,19 +11,23 @@
       </v-col>
       <v-col>
         <v-row align="center" justify="end">
-          <v-col cols="12" md="4">
-            <v-text-field
-              variant="solo"
-              label="ค้นหารายการ"
-              color="secondary"
-              append-inner-icon="mdi-magnify"
-            ></v-text-field>
+          <v-col md="4">
+            <v-form @submit.prevent="handleSearch">
+              <v-text-field
+                v-model="search_string"
+                variant="solo"
+                placeholder="ค้นหารายการ"
+                color="secondary"
+                append-inner-icon="mdi-magnify"
+                @click:append-inner="handleSearch"
+              ></v-text-field>
+            </v-form>
           </v-col>
           <v-col cols="auto">
             <v-btn
               color="secondary"
               variant="tonal"
-              text="ค้นหาขั้นสูง"
+              icon="mdi-tune"
               @click="search_modal = true"
             ></v-btn>
           </v-col>
@@ -62,6 +66,7 @@
             icon="mdi-pencil"
             color="secondary"
             :disabled="disableEditDelete(data)"
+            @click="handleEdit(data)"
           ></v-btn>
           <v-btn
             size="small"
@@ -69,6 +74,7 @@
             icon="mdi-delete"
             color="error"
             :disabled="disableEditDelete(data)"
+            @click="handleDelete(data)"
           ></v-btn>
         </div>
       </template>
@@ -77,6 +83,7 @@
     <accounting-search-modal
       :open="search_modal"
       @close="search_modal = false"
+      @search="handleDeepSearch"
     />
     <accounting-add-modal
       :open="add_modal"
@@ -89,7 +96,7 @@
 <script lang="ts">
 import moment from "moment";
 import type { HeaderProp } from "~/types/table.type";
-import type { AccResponse } from "~/types/accounting.type";
+import type { AccResponse, DeepSearchForm } from "~/types/accounting.type";
 
 export default defineNuxtComponent({
   setup() {
@@ -117,12 +124,14 @@ export default defineNuxtComponent({
     });
 
     const search_modal = ref(false);
+    const search_string = ref("");
     const add_modal = ref(false);
 
     return {
       table,
       search_modal,
       add_modal,
+      search_string,
     };
   },
   async mounted() {
@@ -179,27 +188,130 @@ export default defineNuxtComponent({
       date: string,
       param?: { [key: string]: any },
     ) {
-      const body =
-        this.$store.user?.User_level === "SuperAdmin"
-          ? {
-              ...param,
-              db,
-              date,
-              user_id: this.$store.getUser?.User_id || "",
-            }
+      let body: any = param
+        ? {
+            ...param,
+            db,
+            date,
+          }
+        : {
+            db,
+            date,
+          };
+
+      body =
+        this.$store.user?.User_level === "SuperAdmin" || param?.show_everyone
+          ? body
           : {
-              ...param,
-              db,
-              date,
+              ...body,
+              user_id: this.$store.getUser?.User_id || "",
             };
 
       const res: AccResponse[] = await this.$rest.post("report/search", body);
+      let response = res;
 
-      // if(param){
-      //   // filter by parameters
-      // }
+      if (param) {
+        if (param.bank_select) {
+          if (param.bank_select === "0") {
+            // ถึง
+            response = response.filter(
+              (e) =>
+                (e.id_no >= param.bank_from && e.id_no <= param.bank_to) ||
+                (e.id_no >= param.bank_to && e.id_no <= param.bank_from),
+            );
+          } else {
+            // และ
+            response = response.filter(
+              (e) => e.id_no === param.bank_from || e.id_no === param.bank_to,
+            );
+          }
+        }
+        if (param.ref) {
+          response = response.filter(
+            (e) => e.type_list_reference === param.ref,
+          );
+        }
+        if (!param.bank_select && param.bank_from) {
+          response = response.filter((e) => e.id_no === param.bank_from);
+        }
+        if (param.seperator) {
+          response = response.filter(
+            (e) => e.Transac_separator === param.seperator,
+          );
+        }
+        if (param.user) {
+          response = response.filter((e) => e.User_id === param.user);
+        }
+      }
 
-      this.table.data = res;
+      this.table.data = response;
+    },
+    async handleDeepSearch(form: DeepSearchForm) {
+      this.search_modal = false;
+      const {
+        quarter,
+        start_date,
+        end_date,
+        ref,
+        user,
+        separate,
+        bank_condition,
+        bank_from,
+        bank_to,
+        show_everyone,
+        show_today,
+      } = form;
+      const { start, end } = this.getQuarterRange(Number(quarter));
+      const param: any = { show_today, show_everyone };
+      if (start_date) {
+        param.start_date = moment(start_date, "DD/MM/YYYY").format(
+          "YYYY-MM-DD",
+        );
+      }
+      if (end_date) {
+        param.end_date = moment(end_date, "DD/MM/YYYY").format("YYYY-MM-DD");
+      }
+      if (ref.id_reference) param.ref = ref.id_reference;
+      if (quarter) {
+        param.quarter_start = moment(start, "DD/MM/YYYY").format("YYYY-MM-DD");
+        param.quarter_end = moment(end, "DD/MM/YYYY").format("YYYY-MM-DD");
+      }
+      if (user.User_id) param.user = user.User_id;
+      if (separate.id_seperate) param.seperator = separate.id_seperate;
+      if (bank_condition) param.bank_select = bank_condition;
+      if (bank_from.id_no) param.bank_from = bank_from.id_no;
+      if (bank_to.id_no) param.bank_to = bank_to.id_no;
+
+      this.$store.setLoading(true);
+      await this.fetchDataTable("acc1", moment().format("YYYY-MM"), param);
+      this.$store.setLoading(false);
+    },
+    handleSearch() {
+      const temp1 = this.table.data;
+      let temp2: AccResponse[] = [];
+      if (this.search_string) {
+        temp2 = temp1.filter((e) => {
+          const regex = new RegExp(`(${this.search_string})`, "gi");
+
+          return (
+            e.name_list_reference.match(regex) ||
+            e.Transac_detail.match(regex) ||
+            e.Transac_separator.match(regex) ||
+            e.Transac_amout.match(regex) ||
+            e.account_amout.match(regex) ||
+            e.history_date.match(regex)
+          );
+        });
+        this.table.data = temp2;
+      } else {
+        this.handleRefresh();
+      }
+    },
+    handleDelete(e: AccResponse) {
+      console.log(e);
+    },
+    handleEdit(e: AccResponse) {
+      console.log(e);
     },
   },
 });

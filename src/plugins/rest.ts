@@ -36,6 +36,7 @@ class Rest {
           throw new Error(`ERROR status : ${status}`);
         }
       } else if (status === 401) {
+        this.app.$dialog.toast.error("Please Login");
         this.logout();
       } else {
         throw new Error(`ERROR status : ${status}`);
